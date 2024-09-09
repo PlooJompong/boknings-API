@@ -1,0 +1,74 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: ploodev
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: Bonzai
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  deploymentMethod: direct
+  region: eu-north-1
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            '*'
+            # - arn:aws:dynamodb:eu-north-1:571600828520:table/my-todos
+
+build:
+  esbuild:
+    minify: true
+
+package:
+  individually: true
+
+functions:
+  GetRooms:
+    handler: functions/GetRooms/getRooms.handler
+    events:
+      - httpApi:
+          path: /rooms
+          method: GET
+
+  # PostTodo:
+  #   handler: functions/PostTodo/index.handler
+  #   events:
+  #     - httpApi:
+  #         path: /todos
+  #         method: POST
+  # UpdateTodo:
+  #   handler: functions/UpdateTodo/index.handler
+  #   events:
+  #     - httpApi:
+  #         # path: /todos/{id} om man kan skicka med id
+  #         path: /todos/{id}
+  #         method: PUT
+  # DeleteTodo:
+  #   handler: functions/DeleteTodo/index.handler
+  #   events:
+  #     - httpApi:
+  #         # path: /todos/{id} om man kan skicka med id
+  #         path: /todos/{id}
+  #         method: DELETE
+
+resources:
+  Resources:
+    RoomTypesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: RoomTypes
+        AttributeDefinitions:
+          - AttributeName: 'RoomTypeID'
+            AttributeType: 'N'
+        KeySchema:
+          - AttributeName: 'RoomTypeID'
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
