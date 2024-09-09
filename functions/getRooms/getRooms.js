@@ -5,7 +5,7 @@ const { ScanCommand } = require("@aws-sdk/lib-dynamodb");
 exports.handler = async () => {
   try {
     const rooms = await db.send(new ScanCommand({
-      TableName: 'RoomTypes'
+      TableName: 'Rooms'
     }))
 
     return sendResponse(rooms.Items);
