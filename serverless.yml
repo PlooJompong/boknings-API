@@ -37,13 +37,13 @@ functions:
       - httpApi:
           path: /rooms
           method: GET
+  bookRooms:
+    handler: functions/bookRooms/bookRooms.handler
+    events:
+      - httpApi:
+          path: /booking
+          method: POST
 
-  # PostTodo:
-  #   handler: functions/PostTodo/index.handler
-  #   events:
-  #     - httpApi:
-  #         path: /todos
-  #         method: POST
   # UpdateTodo:
   #   handler: functions/UpdateTodo/index.handler
   #   events:
