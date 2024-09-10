@@ -1,5 +1,5 @@
 const { sendResponse, sendError } = require("../../reponses/index");
-const { db } = require("../../services/index");
+const { db } = require("../../services");
 const { ScanCommand } = require("@aws-sdk/lib-dynamodb");
 
 exports.handler = async () => {
