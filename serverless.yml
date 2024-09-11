@@ -38,18 +38,18 @@ functions:
           path: /bookings
           method: GET
 
+  guestBooking:
+    handler: functions/guestBooking/guestBooking.handler
+    events:
+      - httpApi:
+          path: /bookings/{id}
+          method: GET
+
   bookRooms:
     handler: functions/bookRooms/bookRooms.handler
     events:
       - httpApi:
           path: /booking
-          method: POST
-
-  searchRooms:
-    handler: functions/searchRooms/searchRooms.handler
-    events:
-      - httpApi:
-          path: /search
           method: POST
 
   # UpdateTodo:

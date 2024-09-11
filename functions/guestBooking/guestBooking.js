@@ -1,6 +1,6 @@
 const { sendResponse, sendError } = require("../../reponses/index");
 const { db } = require("../../services/db");
-const { DeleteCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
+const { GetCommand } = require("@aws-sdk/lib-dynamodb");
 
 exports.handler = async (event) => {
   try {
@@ -21,14 +21,7 @@ exports.handler = async (event) => {
       return sendError({ message: "Booking not found" });
     }
 
-    await db.send(new DeleteCommand({
-      TableName: 'Booking',
-      Key: {
-        BookingID: bookingID
-      },
-    }))
-
-    return sendResponse({ message: "Booking deleted successfully" });
+    return sendResponse(result.Item);
 
   } catch (error) {
     return sendError({ message: 'Could not delete booking', error: error.message });

@@ -8,7 +8,7 @@ exports.handler = async () => {
       TableName: 'Booking'
     }))
 
-    return sendResponse(booking.Items);
+    return sendResponse({ Count: booking.Count, Booking: booking.Items });
 
   } catch (error) {
     return sendError({ message: 'Could not get bookings', error: error.message });
