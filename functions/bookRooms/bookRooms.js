@@ -1,7 +1,8 @@
-const { sendResponse, sendError } = require("../../reponses/index");
+const { sendResponse, sendError } = require("../../reponese/index");
 const { db } = require("../../services/db");
-const { PutCommand, ScanCommand } = require("@aws-sdk/lib-dynamodb");
+const { PutCommand } = require("@aws-sdk/lib-dynamodb");
 const { nanoid } = require("nanoid");
+const { getRoomsLeft, getCurrentTime, calculateNight } = require("../../services/utilities");
 
 const rooms = {
   singleRoom: {
@@ -20,10 +21,10 @@ const rooms = {
 
 exports.handler = async (event) => {
   try {
-    const { guests, singleRoom, doubleRoom, suiteRoom, guestName, guestEmail } = JSON.parse(event.body);
+    const { guests, singleRoom = 0, doubleRoom = 0, suiteRoom = 0, checkInDate, checkOutDate, guestName, guestEmail } = JSON.parse(event.body);
     const bookingId = nanoid();
 
-    const roomAmount = (singleRoom || 0) + (doubleRoom || 0) + (suiteRoom || 0);
+    const roomAmount = singleRoom + doubleRoom + suiteRoom;
 
     if (!guests || !guestName || !guestEmail) {
       return sendError({ message: 'All fields are required' });
@@ -37,16 +38,21 @@ exports.handler = async (event) => {
       return sendError({ message: 'No rooms selected' });
     }
 
-    const bookings = await db.send(new ScanCommand({
-      TableName: 'Booking'
-    }));
+    const roomsLeft = await getRoomsLeft();
 
-    const bookedRooms = bookings.Items.reduce((total, booking) => {
-      return total + (booking.SingleRoom || 0) + (booking.DoubleRoom || 0) + (booking.SuiteRoom || 0);
-    }, 0);
+    const numberOfNights = calculateNight(checkInDate, checkOutDate);
 
-    const maxRooms = 20;
-    const roomsLeft = maxRooms - bookedRooms;
+    if (numberOfNights <= 0) {
+      return sendError({ message: 'Check out date must be after check in date' });
+    }
+
+    const price = ((singleRoom * rooms.singleRoom.price) + (doubleRoom * rooms.doubleRoom.price) + (suiteRoom * rooms.suiteRoom.price)) * numberOfNights;
+
+    const totalCapacity = (singleRoom * rooms.singleRoom.capacity) + (doubleRoom * rooms.doubleRoom.capacity) + (suiteRoom * rooms.suiteRoom.capacity)
+
+    if (guests > totalCapacity) {
+      return sendError({ message: 'Not enough room capacity for the number of guests' });
+    }
 
     if (roomAmount > roomsLeft) {
       return sendError({ message: `Not enough rooms available. Only ${roomsLeft} rooms left.` });
@@ -55,13 +61,17 @@ exports.handler = async (event) => {
     const newBooking = {
       BookingID: bookingId,
       Guest: guests,
-      SingleRoom: singleRoom || 0,
-      DoubleRoom: doubleRoom || 0,
-      SuiteRoom: suiteRoom || 0,
+      SingleRoom: singleRoom,
+      DoubleRoom: doubleRoom,
+      SuiteRoom: suiteRoom,
+      CheckInDate: checkInDate,
+      CheckOutDate: checkOutDate,
+      DayBooked: numberOfNights,
       RoomAmount: roomAmount,
-      // Price: 
+      Price: price,
       GuestName: guestName,
-      GuestEmail: guestEmail
+      GuestEmail: guestEmail,
+      CreateAt: getCurrentTime()
     };
 
     await db.send(new PutCommand({

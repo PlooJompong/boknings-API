@@ -1,4 +1,4 @@
-const { sendResponse, sendError } = require("../../reponses/index");
+const { sendResponse, sendError } = require("../../reponese/index");
 const { db } = require("../../services/db");
 const { GetCommand } = require("@aws-sdk/lib-dynamodb");
 

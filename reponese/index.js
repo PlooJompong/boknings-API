@@ -16,7 +16,7 @@ function sendError(data) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ data, error: error }),
+    body: JSON.stringify({ data, error: error.message })
   };
 };
 
