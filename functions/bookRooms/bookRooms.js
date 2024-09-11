@@ -1,23 +1,9 @@
-const { sendResponse, sendError } = require("../../reponese/index");
+const { sendResponse, sendError } = require("../../responses/index");
 const { db } = require("../../services/db");
 const { PutCommand } = require("@aws-sdk/lib-dynamodb");
 const { nanoid } = require("nanoid");
 const { getRoomsLeft, getCurrentTime, calculateNight } = require("../../services/utilities");
-
-const rooms = {
-  singleRoom: {
-    price: 500,
-    capacity: 1
-  },
-  doubleRoom: {
-    price: 1000,
-    capacity: 2
-  },
-  suiteRoom: {
-    price: 1500,
-    capacity: 3
-  }
-}
+const { rooms } = require("../../services/roomsData");
 
 exports.handler = async (event) => {
   try {
@@ -26,7 +12,7 @@ exports.handler = async (event) => {
 
     const roomAmount = singleRoom + doubleRoom + suiteRoom;
 
-    if (!guests || !guestName || !guestEmail) {
+    if (!guests || !guestName || !guestEmail || !checkInDate || !checkOutDate) {
       return sendError({ message: 'All fields are required' });
     }
 
@@ -42,8 +28,12 @@ exports.handler = async (event) => {
 
     const numberOfNights = calculateNight(checkInDate, checkOutDate);
 
+    if (getCurrentTime() > checkInDate) {
+      return sendError({ message: 'Check-in date must be in the future' });
+    }
+
     if (numberOfNights <= 0) {
-      return sendError({ message: 'Check out date must be after check in date' });
+      return sendError({ message: 'Check-Out date must be after Check-In date' });
     }
 
     const price = ((singleRoom * rooms.singleRoom.price) + (doubleRoom * rooms.doubleRoom.price) + (suiteRoom * rooms.suiteRoom.price)) * numberOfNights;
@@ -60,7 +50,7 @@ exports.handler = async (event) => {
 
     const newBooking = {
       BookingID: bookingId,
-      Guest: guests,
+      Guests: guests,
       SingleRoom: singleRoom,
       DoubleRoom: doubleRoom,
       SuiteRoom: suiteRoom,

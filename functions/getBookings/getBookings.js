@@ -1,25 +1,7 @@
-const { sendResponse, sendError } = require("../../reponese/index");
+const { sendResponse, sendError } = require("../../responses/index");
 const { db } = require("../../services/db");
 const { ScanCommand } = require("@aws-sdk/lib-dynamodb");
-const { getRoomsLeft } = require("../../services/utilities");
-
-const reorderObject = (item) => {
-  return {
-    BookingID: item.BookingID,
-    Guest: item.Guest,
-    SingleRoom: item.SingleRoom,
-    DoubleRoom: item.DoubleRoom,
-    SuiteRoom: item.SuiteRoom,
-    CheckInDate: item.CheckInDate,
-    CheckOutDate: item.CheckOutDate,
-    DayBooked: item.DayBooked,
-    RoomAmount: item.RoomAmount,
-    Price: item.Price,
-    GuestName: item.GuestName,
-    GuestEmail: item.GuestEmail,
-    CreateAt: item.CreateAt
-  };
-};
+const { reorderObject, getRoomsLeft } = require("../../services/utilities");
 
 exports.handler = async () => {
   try {

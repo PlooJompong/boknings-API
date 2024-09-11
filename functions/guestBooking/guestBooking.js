@@ -1,6 +1,7 @@
-const { sendResponse, sendError } = require("../../reponese/index");
+const { sendResponse, sendError } = require("../../responses/index");
 const { db } = require("../../services/db");
 const { GetCommand } = require("@aws-sdk/lib-dynamodb");
+const { reorderObject } = require("../../services/utilities");
 
 exports.handler = async (event) => {
   try {
@@ -10,18 +11,20 @@ exports.handler = async (event) => {
       return sendError({ message: "Booking ID is required" });
     }
 
-    const result = await db.send(new GetCommand({
+    const booking = await db.send(new GetCommand({
       TableName: 'Booking',
       Key: {
         BookingID: bookingID
       }
     }))
 
-    if (!result.Item) {
+    if (!booking.Item) {
       return sendError({ message: "Booking not found" });
     }
 
-    return sendResponse(result.Item);
+    const reorderBooking = reorderObject(booking.Item);
+
+    return sendResponse({ Booking: reorderBooking });
 
   } catch (error) {
     return sendError({ message: 'Could not delete booking', error: error.message });

@@ -1,7 +1,25 @@
-const { sendError } = require("../reponese/index");
+const { sendError } = require("../responses/index");
 const { db } = require("./db");
 const { ScanCommand } = require("@aws-sdk/lib-dynamodb");
 const { format } = require("date-fns");
+
+const reorderObject = (item) => {
+  return {
+    BookingID: item.BookingID,
+    Guests: item.Guests,
+    SingleRoom: item.SingleRoom,
+    DoubleRoom: item.DoubleRoom,
+    SuiteRoom: item.SuiteRoom,
+    CheckInDate: item.CheckInDate,
+    CheckOutDate: item.CheckOutDate,
+    DayBooked: item.DayBooked,
+    RoomAmount: item.RoomAmount,
+    Price: item.Price,
+    GuestName: item.GuestName,
+    GuestEmail: item.GuestEmail,
+    CreateAt: item.CreateAt
+  };
+};
 
 async function getRoomsLeft() {
   try {
@@ -32,4 +50,4 @@ function calculateNight(checkInDate, checkOutDate) {
   return Math.ceil(timeDiff) / (1000 * 3600 * 24)
 }
 
-module.exports = { getRoomsLeft, getCurrentTime, calculateNight };
+module.exports = { reorderObject, getRoomsLeft, getCurrentTime, calculateNight };

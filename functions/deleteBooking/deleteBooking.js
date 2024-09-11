@@ -1,4 +1,4 @@
-const { sendResponse, sendError } = require("../../reponese/index");
+const { sendResponse, sendError } = require("../../responses/index");
 const { db } = require("../../services/db");
 const { DeleteCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
 
@@ -28,7 +28,7 @@ exports.handler = async (event) => {
       },
     }))
 
-    return sendResponse({ message: "Booking deleted successfully" });
+    return sendResponse({ message: `BookingID ${bookingID} deleted successfully` });
 
   } catch (error) {
     return sendError({ message: 'Could not delete booking', error: error.message });

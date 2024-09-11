@@ -19,9 +19,7 @@ provider:
             - dynamodb:PutItem
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
-          Resource:
-            '*'
-            # - arn:aws:dynamodb:eu-north-1:571600828520:table/my-todos
+          Resource: '*'
 
 build:
   esbuild:
@@ -52,13 +50,12 @@ functions:
           path: /booking
           method: POST
 
-  # UpdateTodo:
-  #   handler: functions/UpdateTodo/index.handler
-  #   events:
-  #     - httpApi:
-  #         # path: /todos/{id} om man kan skicka med id
-  #         path: /todos/{id}
-  #         method: PUT
+  updateBooking:
+    handler: functions/updateBooking/updateBooking.handler
+    events:
+      - httpApi:
+          path: /booking/{id}
+          method: PUT
 
   deleteBooking:
     handler: functions/deleteBooking/deleteBooking.handler
