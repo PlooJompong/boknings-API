@@ -1,35 +1,39 @@
 const { sendResponse, sendError } = require("../../reponses/index");
-const { db } = require("../../services");
-// const { ScanCommand } = require("@aws-sdk/lib-dynamodb");
+const { db } = require("../../services/db");
+const { PutCommand, ScanCommand } = require("@aws-sdk/lib-dynamodb");
+const { nanoid } = require("nanoid");
 
-// exports.handler = async (event) => {
-//   try {
-//     const { maxGuests, roomType, guestName, guestEmail } = JSON.parse(event.body);
+exports.handler = async (event) => {
+  try {
+    const { guests, roomType, roomAmount, guestName, guestEmail } = JSON.parse(event.body);
+    const bookingId = nanoid();
 
-//     const roomsData = await db.send(new ScanCommand({
-//       TableName: 'Rooms'
-//     }))
+    const bookings = await db.send(new ScanCommand({
+      TableName: 'Booking'
+    }));
 
-//     // const totalGuests = roomsData.Items.reduce((total, room) => total + room.MaxGuests, 0);
+    if (bookings.Items && bookings.Count < 20) {
 
-//     if (maxGuests !== 0) {
+      const newBooking = {
+        BookingID: bookingId,
+        Guest: guests,
+        RoomType: roomType,
+        RoomAmout: roomAmount,
+        GuestName: guestName,
+        GuestEmail: guestEmail
+      };
 
-//       const matchingMaxGuests = roomsData.Items.filter((room) =>
-//         room.MaxGuests <= maxGuests &&
-//         room.Available === true &&
-//         (roomType && roomType.length > 0 ? roomType.includes(room.RoomType) : true));
+      await db.send(new PutCommand({
+        TableName: 'Booking',
+        Item: newBooking
+      }));
 
-//       if (matchingMaxGuests.length > 0) {
-//         return sendResponse({ matchingMaxGuests, AvailableRooms: matchingMaxGuests.length });
+      return sendResponse({ newBooking, message: 'Booking successfully' });
+    } else {
+      return sendResponse({ message: 'Booking limit reached, cannot create more bookings' });
+    }
 
-//       } else {
-//         return sendResponse({
-//           message: 'No rooms found'
-//         });
-//       }
-//     }
-
-//   } catch (error) {
-//     return sendError({ message: 'Could not get Rooms', error: error });
-//   }
-// };
+  } catch (error) {
+    return sendError({ message: 'Could not create booking', error: error.message });
+  }
+};

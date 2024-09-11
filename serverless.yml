@@ -31,11 +31,11 @@ package:
   individually: true
 
 functions:
-  getRooms:
-    handler: functions/getRooms/getRooms.handler
+  getBookings:
+    handler: functions/getBookings/getBookings.handler
     events:
       - httpApi:
-          path: /rooms
+          path: /bookings
           method: GET
 
   bookRooms:
@@ -59,24 +59,24 @@ functions:
   #         # path: /todos/{id} om man kan skicka med id
   #         path: /todos/{id}
   #         method: PUT
-  # DeleteTodo:
-  #   handler: functions/DeleteTodo/index.handler
-  #   events:
-  #     - httpApi:
-  #         # path: /todos/{id} om man kan skicka med id
-  #         path: /todos/{id}
-  #         method: DELETE
+
+  deleteBooking:
+    handler: functions/deleteBooking/deleteBooking.handler
+    events:
+      - httpApi:
+          path: /booking/{id}
+          method: DELETE
 
 resources:
   Resources:
-    RoomTable:
+    Booking:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: Rooms
+        TableName: Booking
         AttributeDefinitions:
-          - AttributeName: 'RoomID'
-            AttributeType: 'N'
+          - AttributeName: 'BookingID'
+            AttributeType: 'S'
         KeySchema:
-          - AttributeName: 'RoomID'
+          - AttributeName: 'BookingID'
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
