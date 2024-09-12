@@ -2,6 +2,8 @@
 
 The Bonzai API manages hotel room bookings, allowing users to create, retrieve, update, and delete reservations. It ensures room availability, guest capacity, and pricing based on room types (Single, Double, Suite). The API includes validation checks for guest limits, email format, and prevents deletions within 2 days of check-in.
 
+Tech Stack: AWS Lambda, API Gateway, DynamoDB, Serverless Framework
+
 ```
 Room capacity and price per night:
   {
