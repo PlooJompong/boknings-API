@@ -1,69 +1,177 @@
-<!--
-title: 'AWS Simple HTTP Endpoint example in NodeJS'
-description: 'This template demonstrates how to make a simple HTTP API with Node.js running on AWS Lambda and API Gateway using the Serverless Framework.'
-layout: Doc
-framework: v4
-platform: AWS
-language: nodeJS
-authorLink: 'https://github.com/serverless'
-authorName: 'Serverless, Inc.'
-authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
--->
-
-# Serverless Framework Node HTTP API on AWS
-
-This template demonstrates how to make a simple HTTP API with Node.js running on AWS Lambda and API Gateway using the Serverless Framework.
-
-This template does not include any kind of persistence (database). For more advanced examples, check out the [serverless/examples repository](https://github.com/serverless/examples/) which includes Typescript, Mongo, DynamoDB and other examples.
-
-## Usage
-
-### Deployment
-
-In order to deploy the example, you need to run the following command:
+## Bonzai API
 
 ```
-serverless deploy
+Room capacity and price per night:
+  {
+    "singleRoom": {
+      "capacity": 1,
+      "price": 500
+    },
+    "doubleRoom": {
+      "capacity": 2,
+      "price": 1000
+    },
+    "suiteRoom": {
+      "capacity": 3,
+      "price": 1500
+    }
+  }
 ```
 
-After running deploy, you should see output similar to:
+##### Get All Bookings
+
+- GET https://95qroyn3ph.execute-api.eu-north-1.amazonaws.com/bookings
 
 ```
-Deploying "serverless-http-api" to stage "dev" (us-east-1)
-
-✔ Service deployed to stack serverless-http-api-dev (91s)
-
-endpoint: GET - https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/
-functions:
-  hello: serverless-http-api-dev-hello (1.6 kB)
-```
-
-_Note_: In current form, after deployment, your API is public and can be invoked by anyone. For production deployments, you might want to configure an authorizer. For details on how to do that, refer to [HTTP API (API Gateway V2) event docs](https://www.serverless.com/framework/docs/providers/aws/events/http-api).
-
-### Invocation
-
-After successful deployment, you can call the created application via HTTP:
-
-```
-curl https://xxxxxxx.execute-api.us-east-1.amazonaws.com/
-```
-
-Which should result in response similar to:
-
-```json
-{ "message": "Go Serverless v4! Your function executed successfully!" }
-```
-
-### Local development
-
-The easiest way to develop and test your function is to use the `dev` command:
+response:
+  {
+    "data": {
+      "RoomsLeft": 19,
+      "Booking": [
+        {
+          "BookingID": "XOHrNyJUeGvAdEdR-77q6",
+          "Guests": 2,
+          "SingleRoom": 0,
+          "DoubleRoom": 0,
+          "SuiteRoom": 1,
+          "RoomAmount": 1,
+          "CheckInDate": "2024-09-13",
+          "CheckOutDate": "2024-09-18",
+          "DayBooked": 5,
+          "Price": 7500,
+          "GuestName": "John Doe",
+          "GuestEmail": "jd@heheh.com",
+          "CreateAt": "2024-09-12 14:10:47"
+        }
+      ]
+    }
+  }
 
 ```
-serverless dev
+
+##### Get One Booking
+
+- GET https://95qroyn3ph.execute-api.eu-north-1.amazonaws.com/bookings/{id}
+
+```
+response:
+  {
+    "data": {
+      "Booking": {
+        "BookingID": "XOHrNyJUeGvAdEdR-77q6",
+        "Guests": 2,
+        "SingleRoom": 0,
+        "DoubleRoom": 0,
+        "SuiteRoom": 1,
+        "RoomAmount": 1,
+        "CheckInDate": "2024-09-13",
+        "CheckOutDate": "2024-09-18",
+        "DayBooked": 5,
+        "Price": 7500,
+        "GuestName": "John Doe",
+        "GuestEmail": "jd@heheh.com",
+        "CreateAt": "2024-09-12 14:10:47"
+      }
+    }
+  }
 ```
 
-This will start a local emulator of AWS Lambda and tunnel your requests to and from AWS Lambda, allowing you to interact with your function as if it were running in the cloud.
+##### Create Booking
 
-Now you can invoke the function as before, but this time the function will be executed locally. Now you can develop your function locally, invoke it, and see the results immediately without having to re-deploy.
+- POST https://95qroyn3ph.execute-api.eu-north-1.amazonaws.com/booking
 
-When you are done developing, don't forget to run `serverless deploy` to deploy the function to the cloud.
+```
+body:
+  {
+    "guests": 2,
+    "singleRoom": 0,
+    "doubleRoom": 0,
+    "suiteRoom": 1,
+    "checkInDate": "2024-09-13",
+    "checkOutDate": "2024-09-18",
+    "guestName": "John Doe",
+    "guestEmail": "jd@heheh.com"
+  }
+
+ Required: guests, checkInDate, checkOutDate, guestName, guestEmail and atleast one room with right capacity
+
+```
+
+```
+response:
+  {
+    "data": {
+    "newBooking": {
+      "BookingID": "XOHrNyJUeGvAdEdR-77q6",
+      "Guests": 2,
+      "SingleRoom": 0,
+      "DoubleRoom": 0,
+      "SuiteRoom": 1,
+      "RoomAmount": 1,
+      "CheckInDate": "2024-09-13",
+      "CheckOutDate": "2024-09-18",
+      "DayBooked": 5,
+      "Price": 7500,
+      "GuestName": "John Doe",
+      "GuestEmail": "jd@heheh.com",
+      "CreateAt": "2024-09-12 14:10:47"
+    },
+    "message": "Booking created successfully"
+  }
+}
+```
+
+##### Update Booking
+
+- PUT https://95qroyn3ph.execute-api.eu-north-1.amazonaws.com/booking/{id}
+
+```
+body:
+  {
+    "guests": 2,
+    "doubleRoom": 1,
+    "suiteRoom": 0,
+    "checkInDate": "2024-09-16",
+    "checkOutDate": "2024-09-21"
+  }
+
+ Required: guests, checkInDate, checkOutDate
+```
+
+```
+response:
+  {
+    "data": {
+      "updatedBooking": {
+        "BookingID": "XOHrNyJUeGvAdEdR-77q6",
+        "Guests": 2,
+        "SingleRoom": 0,
+        "DoubleRoom": 1,
+        "SuiteRoom": 0,
+        "RoomAmount": 1,
+        "CheckInDate": "2024-09-16",
+        "CheckOutDate": "2024-09-21",
+        "DayBooked": 5,
+        "Price": 5000,
+        "GuestName": "John Doe",
+        "GuestEmail": "jd@heheh.com",
+        "CreateAt": "2024-09-12 14:10:47"
+      }
+    }
+  }
+```
+
+##### Delete Booking
+
+- DELETE https://95qroyn3ph.execute-api.eu-north-1.amazonaws.com/booking/{id}
+
+```
+response:
+  {
+    "data": {
+      "message": "BookingID XOHrNyJUeGvAdEdR-77q6 deleted successfully"
+    }
+  }
+
+Bookings with check-in date less than 2 days away, cannot be deleted
+```

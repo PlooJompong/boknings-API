@@ -2,7 +2,7 @@ const { sendResponse, sendError } = require("../../responses/index");
 const { db } = require("../../services/db");
 const { UpdateCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
 const { reorderObject, getRoomsLeft } = require("../../services/utilities");
-const { updateValidation } = require("../../services/validation");
+const { updateValidation } = require("../../services/validations");
 
 exports.handler = async (event) => {
   try {

@@ -13,6 +13,10 @@ exports.handler = async () => {
 
     const roomsLeft = await getRoomsLeft()
 
+    if (booking.Items.length === 0) {
+      return sendResponse({ RoomsLeft: roomsLeft, message: "No bookings found" });
+    }
+
     return sendResponse({ RoomsLeft: roomsLeft, Booking: reorderBooking });
 
   } catch (error) {

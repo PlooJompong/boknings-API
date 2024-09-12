@@ -1,9 +1,27 @@
 const { getCurrentTime, calculateNight } = require("./utilities");
 const { rooms } = require("./roomsData");
 
+function nameValidation(name) {
+  const re = /^[a-zA-Z\s]+$/;
+  return re.test(String(name).trim())
+}
+
+function emailValidation(email) {
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase())
+}
+
 function bookingValidation(guests, singleRoom, doubleRoom, suiteRoom, checkInDate, checkOutDate, guestName, guestEmail) {
   if (!guests || !checkInDate || !checkOutDate || !guestName || !guestEmail) {
     return { error: "All fields (Guests, Check-In date, Check-Out date, Guest Name, and Guest Email) are required" };
+  }
+
+  if (!nameValidation(guestName)) {
+    return { error: "Invalid name" };
+  }
+
+  if (!emailValidation(guestEmail)) {
+    return { error: "Invalid email address" };
   }
 
   return checkBookingInfo(guests, singleRoom, doubleRoom, suiteRoom, checkInDate, checkOutDate);

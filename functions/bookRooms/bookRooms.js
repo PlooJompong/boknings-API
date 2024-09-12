@@ -3,7 +3,7 @@ const { db } = require("../../services/db");
 const { PutCommand } = require("@aws-sdk/lib-dynamodb");
 const { nanoid } = require("nanoid");
 const { getRoomsLeft, getCurrentTime } = require("../../services/utilities");
-const { bookingValidation } = require("../../services/validation");
+const { bookingValidation } = require("../../services/validations");
 
 exports.handler = async (event) => {
   try {
