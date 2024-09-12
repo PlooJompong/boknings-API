@@ -7,6 +7,10 @@ const { bookingValidation } = require("../../services/validations");
 
 exports.handler = async (event) => {
   try {
+    if (event.body === undefined || event.body === null || event.body.trim() === "") {
+      return sendError({ message: "Please don't try to hack, just provide valid booking details :)" });
+    }
+
     const { guests, singleRoom = 0, doubleRoom = 0, suiteRoom = 0, checkInDate, checkOutDate, guestName, guestEmail } = JSON.parse(event.body);
     const bookingId = nanoid();
 

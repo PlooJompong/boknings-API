@@ -21,6 +21,10 @@ exports.handler = async (event) => {
       return sendError({ message: "Booking not found" });
     }
 
+    if (event.body === undefined || event.body === null || event.body.trim() === "") {
+      return sendError({ message: "Please don't try to hack, just provide valid booking details :)" });
+    }
+
     let { guests, singleRoom, doubleRoom, suiteRoom, checkInDate, checkOutDate } = JSON.parse(event.body);
 
     singleRoom = singleRoom !== undefined ? singleRoom : currentBooking.Item.SingleRoom;
