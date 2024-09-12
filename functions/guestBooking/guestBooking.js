@@ -13,9 +13,7 @@ exports.handler = async (event) => {
 
     const booking = await db.send(new GetCommand({
       TableName: 'Booking',
-      Key: {
-        BookingID: bookingID
-      }
+      Key: { BookingID: bookingID }
     }))
 
     if (!booking.Item) {

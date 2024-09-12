@@ -12,9 +12,7 @@ exports.handler = async (event) => {
 
     const result = await db.send(new GetCommand({
       TableName: 'Booking',
-      Key: {
-        BookingID: bookingID
-      }
+      Key: { BookingID: bookingID }
     }))
 
     if (!result.Item) {
@@ -23,9 +21,7 @@ exports.handler = async (event) => {
 
     await db.send(new DeleteCommand({
       TableName: 'Booking',
-      Key: {
-        BookingID: bookingID
-      },
+      Key: { BookingID: bookingID }
     }))
 
     return sendResponse({ message: `BookingID ${bookingID} deleted successfully` });
